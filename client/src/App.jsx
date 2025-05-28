@@ -136,7 +136,6 @@ function App() {
     return (
       <div style={{
         ...containerStyle,
-        padding: 20,
       }}>
         <div style={{
           ...boxStyle,
