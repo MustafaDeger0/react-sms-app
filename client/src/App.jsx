@@ -45,6 +45,12 @@ function App() {
     }
   };
 
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUsername("");
+    setTempUsername("");
+  };
+
   const sendMessage = () => {
     if (!message.trim()) return;
     const newMessage = {
@@ -99,18 +105,18 @@ function App() {
     alignItems: "center",
     justifyContent: "center",
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    
   };
 
   const boxStyle = {
-    width: 400,
+    width: "95%",
+    maxWidth: 500,
     maxHeight: "90vh",
-    backgroundColor: "#6a4db7",
-    boxShadow: "0 4px 15px rgba(106, 77, 183, 0.4), 0 6px 20px rgba(106, 77, 183, 0.3)",
-    color: "white",     
+    backgroundColor: "#1e1e1e",
+    boxShadow:
+      "0 4px 15px rgba(106, 77, 183, 0.4), 0 6px 20px rgba(106, 77, 183, 0.3)",
+    color: "white",
     borderRadius: 16,
     padding: 24,
-    color: "white",
     textAlign: "center",
   };
 
@@ -127,11 +133,23 @@ function App() {
   };
 
   if (!isLoggedIn) {
-    
     return (
-      <div style={containerStyle}>
-        <div style={boxStyle}>
-          <h2 style={{ textAlign: "center", marginBottom: 20 }}>
+      <div style={{
+        ...containerStyle,
+        padding: 20,
+      }}>
+        <div style={{
+          ...boxStyle,
+          width: "100%",
+          maxWidth: 400,
+          backgroundColor: "#1e1e1e",
+          padding: "2rem",
+          textAlign: "center",
+        }}>
+          <h2 style={{
+            marginBottom: "1.5rem",
+            fontSize: "1.5rem"
+          }}>
             Hoşgeldiniz!
           </h2>
 
@@ -151,6 +169,7 @@ function App() {
               boxShadow: "inset 0 0 5px rgba(255, 255, 255, 0.3)",
               color: "#6a4db7",
               fontWeight: "600",
+              backgroundColor: "#2d2d2d",
             }}
             onKeyDown={(e) => e.key === "Enter" && handleLogin()}
           />
@@ -178,111 +197,175 @@ function App() {
               e.target.style.backgroundColor = "#fff";
             }}
           >
-
             Giriş Yap
           </button>
         </div>
       </div>
     );
   }
-
   return (
     <div style={containerStyle}>
-      <div style={{ ...boxStyle, width: 500,backgroundColor: "#1e1e1e",}}>
-        <h2 style={{ textAlign: "center", marginBottom: 20 }}>
-          Sohbet Odası ({username})
-        </h2>
+      <div style={boxStyle}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+          <h2 style={{ textAlign: "center", margin: 0 }}>
+            Sohbet Odası ({username})
+          </h2>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              onClick={clearChat}
+              style={{
+                backgroundColor: 'transparent',
+                border: 'none',
+                color: '#e74c3c',
+                cursor: 'pointer',
+                padding: '5px',
+                borderRadius: '5px',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'rgba(231, 76, 60, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'transparent';
+              }}
+              title="Sohbeti Temizle"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              </svg>
+            </button>
+
+            <button
+              onClick={handleLogout}
+              style={{
+                backgroundColor: 'transparent',
+                border: 'none',
+                color: '#555',
+                cursor: 'pointer',
+                padding: '5px',
+                borderRadius: '5px',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'rgba(85, 85, 85, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'transparent';
+              }}
+              title="Çıkış Yap"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+              </svg>
+            </button>
+          </div>
+        </div>
 
         <div
           style={{
-          height: 300,
-          overflowY: "auto",
-          backgroundColor: "#333333",
-          borderRadius: 10,
-          padding: 10,
-          marginBottom: 15,
+            height: 300,
+            overflowY: "auto",
+            backgroundColor: "#333333",
+            borderRadius: 10,
+            padding: 10,
+            marginBottom: 15,
           }}
-    >
-            {chat.map((msg, i) => {
-              const isOwnMessage = msg.username === username;
-              const bgColor = isOwnMessage
-                ? "#6a4db7"
-                : getUserColor(msg.username);
-              return (
+        >
+          {chat.map((msg, i) => {
+            const isOwnMessage = msg.username === username;
+            const bgColor = isOwnMessage
+              ? "#6a4db7"
+              : getUserColor(msg.username);
+            return (
+              <div
+                key={i}
+                style={{
+                  maxWidth: "50%",
+                  marginBottom: 12,
+                  marginLeft: isOwnMessage ? "auto" : "0",
+                  backgroundColor: bgColor,
+                  color: "white",
+                  padding: "12px 18px",
+                  borderRadius: 20,
+                  borderTopRightRadius: isOwnMessage ? 0 : 20,
+                  borderTopLeftRadius: isOwnMessage ? 20 : 0,
+                  boxShadow: isOwnMessage
+                    ? "0 4px 12px rgba(106, 77, 183, 0.7)"
+                    : "0 4px 12px rgba(0,0,0,0.8)",
+                  wordBreak: "break-word",
+                  fontWeight: "600",
+                  fontSize: 15,
+                  textAlign: "left",
+                }}
+              >
                 <div
-                  key={i}
                   style={{
-                    maxWidth: "50%",
-                    marginBottom: 12,
-                    marginLeft: isOwnMessage ? "auto" : "0",
-                    backgroundColor: bgColor,
-                    color: "white",
-                    padding: "12px 18px",
-                    borderRadius: 20,
-                    borderTopRightRadius: isOwnMessage ? 0 : 20,
-                    borderTopLeftRadius: isOwnMessage ? 20 : 0,
-                    boxShadow: isOwnMessage
-                      ? "0 4px 12px rgba(106, 77, 183, 0.7)"
-                      : "0 4px 12px rgba(0,0,0,0.8)",
-                    wordBreak: "break-word",
-                    fontWeight: "600",
-                    fontSize: 15,
-                    textAlign:"left"
+                    marginBottom: 6,
+                    opacity: 0.75,
+                    fontSize: 13,
+                    textAlign: "left",
                   }}
                 >
-                  <div style={{ marginBottom: 6, opacity: 0.75, fontSize: 13, textAlign:"left" }}>
-                    {msg.username}
-                  </div>
-                  <div>{msg.text}</div>
-                  <div
-                    style={{
-                      fontSize: 11,
-                      textAlign: "right",
-                      marginTop: 8,
-                      opacity: 0.6,
-                    }}
-                  >
-                    {msg.time}
-                  </div>
+                  {msg.username}
                 </div>
-              );
-            })}
-            <div ref={messagesEndRef} />
-          </div>
-        <input
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          placeholder="Mesajınızı yazın..."
-          style={inputStyle}
-        />
+                <div>{msg.text}</div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    textAlign: "right",
+                    marginTop: 8,
+                    opacity: 0.6,
+                  }}
+                >
+                  {msg.time}
+                </div>
+              </div>
+            );
+          })}
+          <div ref={messagesEndRef} />
+        </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 15 }}>
+          <input
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+            placeholder="Mesajınızı yazın..."
+            style={{
+              ...inputStyle,
+              width: 'calc(100% - 50px)',
+              marginBottom: 0,
+              borderTopRightRadius: 0,
+              borderBottomRightRadius: 0
+            }}
+          />
           <button
             onClick={sendMessage}
             style={{
-              ...inputStyle,
-              backgroundColor: "#6a4db7",
-              color: "white",
-              fontWeight: "bold",
-              width: "48%",
-              cursor: "pointer",
+              width: '50px',
+              height: '46px',
+              backgroundColor: '#6a4db7',
+              color: 'white',
+              border: 'none',
+              borderTopRightRadius: '8px',
+              borderBottomRightRadius: '8px',
+              cursor: 'pointer',
+              marginLeft:"5px",
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#5d3dac';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#6a4db7';
             }}
           >
-            Gönder
-          </button>
-          <button
-            onClick={clearChat}
-            style={{
-              ...inputStyle,
-              backgroundColor: "#b00020",
-              color: "white",
-              fontWeight: "bold",
-              width: "48%",
-              cursor: "pointer",
-            }}
-          >
-            Temizle
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+            </svg>
           </button>
         </div>
       </div>
