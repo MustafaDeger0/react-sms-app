@@ -4,7 +4,12 @@ import io from "socket.io-client";
 const socket = io("http://localhost:3001");
 
 const userColors = [
-  "#6a4db7", "#f25f5c", "#70c1b3", "#b5ac07", "#577590", "#9a8c98"
+  "#6a4db7",
+  "#f25f5c",
+  "#70c1b3",
+  "#b5ac07",
+  "#577590",
+  "#9a8c98",
 ];
 
 const getUserColor = (username) => {
@@ -65,6 +70,7 @@ function App() {
             msg.text === data.text
         );
         if (isExist) return prev;
+
         const updated = [...prev, data];
         saveMessagesToStorage(updated);
         return updated;
@@ -85,33 +91,50 @@ function App() {
     setChat([]);
   };
 
-  return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#0f0f0f",
-        padding: 20,
-      }}
-    >
-      {!isLoggedIn ? (
-        <div
-          style={{
-            maxWidth: 400,
-            width: "100%",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-            textAlign: "center",
-            padding: 30,
-            borderRadius: 12,
-            backgroundColor: "#6a4db7",
-            boxShadow:
-              "0 4px 15px rgba(106, 77, 183, 0.4), 0 6px 20px rgba(106, 77, 183, 0.3)",
-            color: "white",
-          }}
-        >
-          <h2 style={{ marginBottom: 20, fontWeight: "700" }}>Hoşgeldin</h2>
+  const containerStyle = {
+    height: "100vh",
+    width: "100vw",
+    backgroundColor: "#1a1a1a",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    
+  };
+
+  const boxStyle = {
+    width: 400,
+    maxHeight: "90vh",
+    backgroundColor: "#6a4db7",
+    boxShadow: "0 4px 15px rgba(106, 77, 183, 0.4), 0 6px 20px rgba(106, 77, 183, 0.3)",
+    color: "white",     
+    borderRadius: 16,
+    padding: 24,
+    color: "white",
+    textAlign: "center",
+  };
+
+  const inputStyle = {
+    width: "95%",
+    padding: "12px 15px",
+    fontSize: 16,
+    borderRadius: 8,
+    border: "none",
+    outline: "none",
+    marginBottom: 16,
+    backgroundColor: "#444",
+    color: "#fff",
+  };
+
+  if (!isLoggedIn) {
+    
+    return (
+      <div style={containerStyle}>
+        <div style={boxStyle}>
+          <h2 style={{ textAlign: "center", marginBottom: 20 }}>
+            Hoşgeldiniz!
+          </h2>
+
           <input
             type="text"
             value={tempUsername}
@@ -131,6 +154,7 @@ function App() {
             }}
             onKeyDown={(e) => e.key === "Enter" && handleLogin()}
           />
+
           <button
             onClick={handleLogin}
             style={{
@@ -154,69 +178,41 @@ function App() {
               e.target.style.backgroundColor = "#fff";
             }}
           >
+
             Giriş Yap
           </button>
         </div>
-      ) : (
+      </div>
+    );
+  }
+
+  return (
+    <div style={containerStyle}>
+      <div style={{ ...boxStyle, width: 500,backgroundColor: "#1e1e1e",}}>
+        <h2 style={{ textAlign: "center", marginBottom: 20 }}>
+          Sohbet Odası ({username})
+        </h2>
+
         <div
           style={{
-            maxWidth: 600,
-            width: "100%",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-            backgroundColor: "#1a1a1a",
-            padding: 20,
-            borderRadius: 12,
-            color: "white",
-            boxShadow: "0 4px 20px rgba(106, 77, 183, 0.6), 0 6px 25px rgba(0,0,0,0.8)",
+          height: 300,
+          overflowY: "auto",
+          backgroundColor: "#333333",
+          borderRadius: 10,
+          padding: 10,
+          marginBottom: 15,
           }}
-        >
-          <h2 style={{ textAlign: "center", marginBottom: 20, fontWeight: "700" }}>
-            Gerçek Zamanlı Chat
-          </h2>
-
-          <button
-            onClick={clearChat}
-            style={{
-              marginBottom: 15,
-              padding: "10px 15px",
-              backgroundColor: "#b00020",
-              color: "white",
-              border: "none",
-              borderRadius: 8,
-              cursor: "pointer",
-              fontWeight: "700",
-              boxShadow: "0 2px 8px rgba(176, 0, 32, 0.8)",
-              transition: "background-color 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = "#d00030";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = "#b00020";
-            }}
-          >
-            Sohbeti Sıfırla
-          </button>
-
-          <div
-            style={{
-              height: 350,
-              overflowY: "auto",
-              padding: 15,
-              borderRadius: 12,
-              backgroundColor: "#2c2c2c",
-              boxShadow: "inset 0 0 10px #4b2a7a",
-              marginBottom: 15,
-            }}
-          >
+    >
             {chat.map((msg, i) => {
               const isOwnMessage = msg.username === username;
-              const bgColor = isOwnMessage ? "#6a4db7" : getUserColor(msg.username);
+              const bgColor = isOwnMessage
+                ? "#6a4db7"
+                : getUserColor(msg.username);
               return (
                 <div
                   key={i}
                   style={{
-                    maxWidth: "80%",
+                    maxWidth: "50%",
                     marginBottom: 12,
                     marginLeft: isOwnMessage ? "auto" : "0",
                     backgroundColor: bgColor,
@@ -231,9 +227,10 @@ function App() {
                     wordBreak: "break-word",
                     fontWeight: "600",
                     fontSize: 15,
+                    textAlign:"left"
                   }}
                 >
-                  <div style={{ marginBottom: 6, opacity: 0.75, fontSize: 13 }}>
+                  <div style={{ marginBottom: 6, opacity: 0.75, fontSize: 13, textAlign:"left" }}>
                     {msg.username}
                   </div>
                   <div>{msg.text}</div>
@@ -252,26 +249,43 @@ function App() {
             })}
             <div ref={messagesEndRef} />
           </div>
+        <input
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          placeholder="Mesajınızı yazın..."
+          style={inputStyle}
+        />
 
-          <input
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-            placeholder="Mesaj yaz..."
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <button
+            onClick={sendMessage}
             style={{
-              width: "100%",
-              padding: 14,
-              fontSize: 16,
-              borderRadius: 12,
-              border: "none",
-              outline: "none",
-              boxShadow: "0 0 10px #6a4db7",
-              backgroundColor: "#333333",
+              ...inputStyle,
+              backgroundColor: "#6a4db7",
               color: "white",
+              fontWeight: "bold",
+              width: "48%",
+              cursor: "pointer",
             }}
-          />
+          >
+            Gönder
+          </button>
+          <button
+            onClick={clearChat}
+            style={{
+              ...inputStyle,
+              backgroundColor: "#b00020",
+              color: "white",
+              fontWeight: "bold",
+              width: "48%",
+              cursor: "pointer",
+            }}
+          >
+            Temizle
+          </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }
