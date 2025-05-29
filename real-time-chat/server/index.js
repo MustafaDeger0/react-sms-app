@@ -10,18 +10,20 @@ app.use(cors());
 
 const server = http.createServer(app);
 
+// CORS için izin verilen domainler
 const allowedOrigins = [
   "http://localhost:5173", // yerel frontend
-  "https://react-sms-app.vercel.app", // canlı frontend adresin
-  // başka izin vereceğin adresler varsa buraya ekle
+  "https://react-sms-app.vercel.app", // canlı frontend
+  "https://socket-server-dl73.onrender.com" // canlı backend
 ];
 
 const io = new Server(server, {
   cors: {
-    origin: function(origin, callback){
-      if(!origin) return callback(null, true); // Postman gibi origin olmadan gelenlere izin
-      if(allowedOrigins.indexOf(origin) === -1){
-        const msg = `CORS policy: ${origin} izinsiz`;
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // Origin yoksa (Postman gibi), izin ver
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg = `CORS policy hatası: ${origin} izinsiz erişim denemesi`;
+        console.error(msg);
         return callback(new Error(msg), false);
       }
       return callback(null, true);
@@ -30,19 +32,28 @@ const io = new Server(server, {
   },
 });
 
+// Socket bağlantı işlemleri
 io.on("connection", (socket) => {
   console.log("Yeni kullanıcı bağlandı:", socket.id);
 
+  // Mesaj gönderme
   socket.on("send_message", (data) => {
     console.log("Mesaj alındı:", data);
     io.emit("receive_message", data);
   });
 
+  // Ping-pong sistemi (isteğe bağlı)
+  socket.on("ping", () => {
+    socket.emit("pong");
+  });
+
+  // Bağlantı kesilince
   socket.on("disconnect", () => {
     console.log("Kullanıcı ayrıldı:", socket.id);
   });
 });
 
+// Sunucuyu başlat
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`Sunucu ${PORT} portunda çalışıyor`);
